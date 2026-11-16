@@ -343,6 +343,13 @@ const accessories = [
 const exerciseSelect = document.querySelector("#exercise-select");
 const addExerciseButton = document.querySelector("#add-exercise");
 const exerciseEmpty = document.querySelector("#exercise-empty");
+const exerciseDetail = document.querySelector("#exercise-detail");
+const exerciseIllustration = document.querySelector("#exercise-illustration");
+const exerciseAnimationTitle = document.querySelector("#exercise-animation-title");
+const exerciseDetailTitle = document.querySelector("#exercise-detail-title");
+const exerciseDetailEquipment = document.querySelector("#exercise-detail-equipment");
+const exerciseInstructions = document.querySelector("#exercise-instructions");
+const exerciseFocus = document.querySelector("#exercise-focus");
 const exerciseSearch = document.querySelector("#exercise-search");
 const lessonList = document.querySelector("#lesson-list");
 const lessonEmpty = document.querySelector("#lesson-empty");
@@ -390,7 +397,39 @@ function renderCatalog() {
   exerciseSelect.replaceChildren(exerciseSelect.options[0], fragment);
   exerciseSelect.selectedIndex = 0;
   exerciseEmpty.hidden = filteredExercises.length > 0;
+  renderExerciseDetail(null);
   updateAddButtons();
+}
+
+function renderExerciseDetail(exercise) {
+  if (!exercise) {
+    exerciseDetail.hidden = true;
+    return;
+  }
+
+  const guide = exerciseGuides[exercise.id];
+  if (!guide) throw new Error(`Exercise details are missing for ${exercise.id}`);
+
+  exerciseDetailTitle.textContent = exercise.name;
+  exerciseDetailEquipment.textContent = `${exercise.equipment === "mat" ? "מזרן" : "רפורמר"} · ${exercise.original}`;
+  exerciseInstructions.textContent = guide.instructions;
+  exerciseAnimationTitle.textContent = `איור תנועה מונפש: ${exercise.name}`;
+  exerciseIllustration.classList.toggle("is-reformer", exercise.equipment === "reformer");
+  exerciseIllustration.style.setProperty("--torso-motion", `${guide.motion.torso}deg`);
+  exerciseIllustration.style.setProperty("--arms-motion", `${guide.motion.arms}deg`);
+  exerciseIllustration.style.setProperty("--near-leg-motion", `${guide.motion.nearLeg}deg`);
+  exerciseIllustration.style.setProperty("--far-leg-motion", `${guide.motion.farLeg}deg`);
+  exerciseIllustration.style.setProperty("--carriage-motion", `${guide.motion.carriage}px`);
+  exerciseIllustration.style.setProperty("--motion-duration", `${guide.motion.duration}s`);
+
+  const muscleTags = document.createDocumentFragment();
+  guide.focus.forEach((muscle) => {
+    const tag = document.createElement("li");
+    tag.textContent = muscle;
+    muscleTags.append(tag);
+  });
+  exerciseFocus.replaceChildren(muscleTags);
+  exerciseDetail.hidden = false;
 }
 
 function renderLesson() {
@@ -487,7 +526,11 @@ filterButtons.forEach((button) => {
 
 exerciseSearch.addEventListener("input", renderCatalog);
 
-exerciseSelect.addEventListener("change", updateAddButtons);
+exerciseSelect.addEventListener("change", () => {
+  const exercise = exercises.find((item) => item.id === exerciseSelect.value);
+  renderExerciseDetail(exercise);
+  updateAddButtons();
+});
 
 addExerciseButton.addEventListener("click", () => {
   const exercise = exercises.find((item) => item.id === exerciseSelect.value);
@@ -496,7 +539,6 @@ addExerciseButton.addEventListener("click", () => {
 
   const duration = Math.min(exercise.duration, remaining);
   lessonExercises.push({ ...exercise, duration, instanceId: nextLessonItemId++ });
-  exerciseSelect.selectedIndex = 0;
   renderLesson();
   if (duration < exercise.duration) {
     lessonFeedback.textContent = `נוספו ${duration} דקות ל${exercise.name}; משך התרגיל הותאם לזמן שנותר.`;
