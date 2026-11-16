@@ -24,6 +24,7 @@
         <nav id="main-nav" class="main-nav" aria-label="ניווט ראשי">
           <a href="#about">קצת עליי</a>
           <a href="#practice">האימונים</a>
+          <a href="#exercise-library">מאגר תרגילים</a>
           <a class="nav-contact" href="#contact">נדבר? <span aria-hidden="true">↗</span></a>
         </nav>
       </div>
@@ -166,6 +167,51 @@
         </div>
       </section>
 
+      <section id="exercise-library" class="exercise-library section-anchor" aria-labelledby="exercise-library-title">
+        <div class="container">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">03 / בונות יחד</p>
+              <h2 id="exercise-library-title">מאגר תרגילים.<br>שיעור בקצב שלך.</h2>
+            </div>
+            <p>בחרי תרגילים מהמזרן ומהרפורמר,<br>והרכיבי מהם שיעור של 50 דקות.</p>
+          </div>
+          <p class="library-note">המאגר מבוסס על תרגילים מהרפרטואר הקלאסי של ג׳וזף פילאטיס. השמות והחלוקה עשויים להשתנות בין אסכולות; משכי הזמן הם הצעה לתכנון, לא תקן קבוע.</p>
+          <div class="library-controls">
+            <label class="search-field" for="exercise-search">
+              <span>חיפוש תרגיל</span>
+              <input id="exercise-search" type="search" placeholder="למשל: מאה או Hundred" autocomplete="off">
+            </label>
+            <div class="equipment-filters" role="group" aria-label="סינון לפי ציוד">
+              <button type="button" class="filter-button" data-equipment="all" aria-pressed="true">הכול</button>
+              <button type="button" class="filter-button" data-equipment="mat" aria-pressed="false">מזרן</button>
+              <button type="button" class="filter-button" data-equipment="reformer" aria-pressed="false">רפורמר</button>
+            </div>
+          </div>
+          <div class="builder-layout">
+            <div class="catalog-panel" aria-label="תרגילים לבחירה">
+              <div id="exercise-list" class="exercise-list"></div>
+              <p id="exercise-empty" class="empty-message" hidden>לא נמצאו תרגילים מתאימים.</p>
+            </div>
+            <aside class="lesson-builder" aria-labelledby="lesson-title">
+              <div class="lesson-heading">
+                <div>
+                  <p class="eyebrow">השיעור שלך</p>
+                  <h3 id="lesson-title">50 דקות של תנועה</h3>
+                </div>
+                <p class="lesson-total"><span id="lesson-total">0</span><span> / 50 דקות</span></p>
+              </div>
+              <progress id="lesson-progress" max="50" value="0" aria-label="משך השיעור מתוך 50 דקות"></progress>
+              <p id="lesson-feedback" class="lesson-feedback" role="status" aria-live="polite">הוסיפי תרגילים כדי להתחיל לבנות את השיעור.</p>
+              <ol id="lesson-list" class="lesson-list"></ol>
+              <p id="lesson-empty" class="lesson-empty">השיעור עדיין ריק.</p>
+              <button id="clear-lesson" class="clear-lesson" type="button" disabled>ניקוי השיעור</button>
+            </aside>
+          </div>
+          <p class="safety-note">הכלי מיועד לתכנון שיעור בידי מדריכה. התאימי את בחירת התרגילים והקצב להכשרה, לניסיון ולצרכים של המתאמנות והמתאמנים.</p>
+        </div>
+      </section>
+
       <aside class="breath-note" aria-label="רגע לנשימה">
         <span class="breath-symbol" aria-hidden="true">✳</span>
         <p>לא צריך להגיע עם הכול.<br><span>רק עם עצמך.</span></p>
@@ -175,7 +221,7 @@
       <section id="contact" class="contact section-anchor" aria-labelledby="contact-title">
         <div class="container contact-grid">
           <div>
-            <p class="eyebrow">03 / כאן מתחילים</p>
+            <p class="eyebrow">04 / כאן מתחילים</p>
             <h2 id="contact-title">נפנה מקום<br>לתנועה?</h2>
             <p>לפרטים נוספים ולהיכרות, זה המספר שלי.</p>
           </div>
