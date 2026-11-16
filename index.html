@@ -190,7 +190,13 @@
           </div>
           <div class="builder-layout">
             <div class="catalog-panel" aria-label="תרגילים לבחירה">
-              <div id="exercise-list" class="exercise-list"></div>
+              <label class="exercise-select-label" for="exercise-select">בחירת תרגיל</label>
+              <div class="exercise-picker">
+                <select id="exercise-select" class="exercise-select">
+                  <option value="">בחרי תרגיל מהרשימה</option>
+                </select>
+                <button id="add-exercise" class="add-exercise" type="button" disabled>הוספה לשיעור</button>
+              </div>
               <p id="exercise-empty" class="empty-message" hidden>לא נמצאו תרגילים מתאימים.</p>
             </div>
             <aside class="lesson-builder" aria-labelledby="lesson-title">
@@ -205,6 +211,16 @@
               <p id="lesson-feedback" class="lesson-feedback" role="status" aria-live="polite">הוסיפי תרגילים כדי להתחיל לבנות את השיעור.</p>
               <ol id="lesson-list" class="lesson-list"></ol>
               <p id="lesson-empty" class="lesson-empty">השיעור עדיין ריק.</p>
+              <div class="accessory-picker">
+                <label for="accessory-select">אביזרים לשיעור</label>
+                <div class="accessory-controls">
+                  <select id="accessory-select">
+                    <option value="">בחירת אביזר</option>
+                  </select>
+                  <button id="add-accessory" class="add-accessory" type="button" disabled>הוספה</button>
+                </div>
+                <ul id="accessory-list" class="accessory-list" aria-label="אביזרים שנבחרו"></ul>
+              </div>
               <button id="clear-lesson" class="clear-lesson" type="button" disabled>ניקוי השיעור</button>
             </aside>
           </div>

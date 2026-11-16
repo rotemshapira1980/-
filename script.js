@@ -91,7 +91,19 @@ const exercises = [
   { id: "control-balance", name: "שליטה ואיזון", original: "Control Balance", equipment: "reformer", duration: 3, category: "תמיכת גוף וזרימה" }
 ];
 
-const exerciseList = document.querySelector("#exercise-list");
+const accessories = [
+  { id: "small-ball", name: "כדור קטן" },
+  { id: "large-ball", name: "כדור גדול" },
+  { id: "magic-circle", name: "טבעת פילאטיס" },
+  { id: "balance-disc", name: "פיתה לשיווי משקל" },
+  { id: "foam-roller", name: "גליל" },
+  { id: "hand-weights", name: "משקולות יד" },
+  { id: "resistance-band", name: "גומיית התנגדות" },
+  { id: "stretch-strap", name: "רצועת מתיחה" }
+];
+
+const exerciseSelect = document.querySelector("#exercise-select");
+const addExerciseButton = document.querySelector("#add-exercise");
 const exerciseEmpty = document.querySelector("#exercise-empty");
 const exerciseSearch = document.querySelector("#exercise-search");
 const lessonList = document.querySelector("#lesson-list");
@@ -100,8 +112,12 @@ const lessonTotal = document.querySelector("#lesson-total");
 const lessonProgress = document.querySelector("#lesson-progress");
 const lessonFeedback = document.querySelector("#lesson-feedback");
 const clearLessonButton = document.querySelector("#clear-lesson");
+const accessorySelect = document.querySelector("#accessory-select");
+const addAccessoryButton = document.querySelector("#add-accessory");
+const accessoryList = document.querySelector("#accessory-list");
 const filterButtons = document.querySelectorAll(".filter-button");
 const lessonExercises = [];
+const lessonAccessories = [];
 let selectedEquipment = "all";
 let nextLessonItemId = 1;
 
@@ -118,35 +134,23 @@ function renderCatalog() {
   });
   const fragment = document.createDocumentFragment();
 
-  filteredExercises.forEach((exercise) => {
-    const card = document.createElement("article");
-    card.className = "exercise-card";
+  ["mat", "reformer"].forEach((equipment) => {
+    const equipmentExercises = filteredExercises.filter((exercise) => exercise.equipment === equipment);
+    if (equipmentExercises.length === 0) return;
 
-    const details = document.createElement("div");
-    details.className = "exercise-details";
-
-    const title = document.createElement("h4");
-    title.textContent = exercise.name;
-    const original = document.createElement("p");
-    original.className = "exercise-original";
-    original.textContent = exercise.original;
-    const meta = document.createElement("p");
-    meta.className = "exercise-meta";
-    meta.textContent = `${exercise.equipment === "mat" ? "מזרן" : "רפורמר"} · ${exercise.category} · כ־${exercise.duration} דקות`;
-    details.append(title, original, meta);
-
-    const addButton = document.createElement("button");
-    addButton.className = "add-exercise";
-    addButton.type = "button";
-    addButton.dataset.exerciseId = exercise.id;
-    addButton.textContent = "הוספה";
-    addButton.setAttribute("aria-label", `הוספת ${exercise.name} לשיעור`);
-
-    card.append(details, addButton);
-    fragment.append(card);
+    const group = document.createElement("optgroup");
+    group.label = equipment === "mat" ? "מזרן" : "רפורמר";
+    equipmentExercises.forEach((exercise) => {
+      const option = document.createElement("option");
+      option.value = exercise.id;
+      option.textContent = `${exercise.name} · ${exercise.original} · כ־${exercise.duration} דקות`;
+      group.append(option);
+    });
+    fragment.append(group);
   });
 
-  exerciseList.replaceChildren(fragment);
+  exerciseSelect.replaceChildren(exerciseSelect.options[0], fragment);
+  exerciseSelect.selectedIndex = 0;
   exerciseEmpty.hidden = filteredExercises.length > 0;
   updateAddButtons();
 }
@@ -212,9 +216,25 @@ function renderLesson() {
 
 function updateAddButtons() {
   const isFull = getLessonDuration() >= 50;
-  exerciseList.querySelectorAll(".add-exercise").forEach((button) => {
-    button.disabled = isFull;
+  addExerciseButton.disabled = isFull || !exerciseSelect.value;
+}
+
+function renderAccessories() {
+  const fragment = document.createDocumentFragment();
+  lessonAccessories.forEach((accessory) => {
+    const item = document.createElement("li");
+    item.className = "accessory-chip";
+    const name = document.createElement("span");
+    name.textContent = accessory.name;
+    const removeButton = document.createElement("button");
+    removeButton.type = "button";
+    removeButton.dataset.accessoryId = accessory.id;
+    removeButton.setAttribute("aria-label", `הסרת ${accessory.name} מהשיעור`);
+    removeButton.textContent = "×";
+    item.append(name, removeButton);
+    fragment.append(item);
   });
+  accessoryList.replaceChildren(fragment);
 }
 
 filterButtons.forEach((button) => {
@@ -229,16 +249,16 @@ filterButtons.forEach((button) => {
 
 exerciseSearch.addEventListener("input", renderCatalog);
 
-exerciseList.addEventListener("click", (event) => {
-  const button = event.target.closest(".add-exercise");
-  if (!button || button.disabled) return;
+exerciseSelect.addEventListener("change", updateAddButtons);
 
-  const exercise = exercises.find((item) => item.id === button.dataset.exerciseId);
+addExerciseButton.addEventListener("click", () => {
+  const exercise = exercises.find((item) => item.id === exerciseSelect.value);
   const remaining = 50 - getLessonDuration();
   if (!exercise || remaining <= 0) return;
 
   const duration = Math.min(exercise.duration, remaining);
   lessonExercises.push({ ...exercise, duration, instanceId: nextLessonItemId++ });
+  exerciseSelect.selectedIndex = 0;
   renderLesson();
   if (duration < exercise.duration) {
     lessonFeedback.textContent = `נוספו ${duration} דקות ל${exercise.name}; משך התרגיל הותאם לזמן שנותר.`;
@@ -250,6 +270,44 @@ lessonList.addEventListener("click", (event) => {
   if (!button) return;
   lessonExercises.splice(Number(button.dataset.lessonIndex), 1);
   renderLesson();
+});
+
+accessories.forEach((accessory) => {
+  const option = document.createElement("option");
+  option.value = accessory.id;
+  option.textContent = accessory.name;
+  accessorySelect.append(option);
+});
+
+accessorySelect.addEventListener("change", () => {
+  addAccessoryButton.disabled = !accessorySelect.value;
+});
+
+addAccessoryButton.addEventListener("click", () => {
+  const accessory = accessories.find((item) => item.id === accessorySelect.value);
+  if (!accessory) return;
+
+  if (lessonAccessories.some((item) => item.id === accessory.id)) {
+    lessonFeedback.textContent = `${accessory.name} כבר נמצא ברשימת האביזרים לשיעור.`;
+    return;
+  }
+
+  lessonAccessories.push(accessory);
+  accessorySelect.selectedIndex = 0;
+  addAccessoryButton.disabled = true;
+  renderAccessories();
+  lessonFeedback.textContent = `נוסף לשיעור: ${accessory.name}. האביזרים אינם משנים את משך השיעור.`;
+});
+
+accessoryList.addEventListener("click", (event) => {
+  const button = event.target.closest("button[data-accessory-id]");
+  if (!button) return;
+  const accessoryIndex = lessonAccessories.findIndex((item) => item.id === button.dataset.accessoryId);
+  if (accessoryIndex === -1) return;
+
+  const [removedAccessory] = lessonAccessories.splice(accessoryIndex, 1);
+  renderAccessories();
+  lessonFeedback.textContent = `הוסר מהשיעור: ${removedAccessory.name}.`;
 });
 
 lessonList.addEventListener("change", (event) => {
@@ -272,8 +330,13 @@ lessonList.addEventListener("change", (event) => {
 
 clearLessonButton.addEventListener("click", () => {
   lessonExercises.length = 0;
+  lessonAccessories.length = 0;
+  accessorySelect.selectedIndex = 0;
+  addAccessoryButton.disabled = true;
   renderLesson();
+  renderAccessories();
 });
 
+renderAccessories();
 renderCatalog();
 renderLesson();
